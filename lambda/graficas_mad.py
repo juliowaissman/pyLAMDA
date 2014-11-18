@@ -28,17 +28,25 @@ def grafica_mad():
 
     m = mad(rho, x)[0]
 
-    plt.plot(xi, m[:, 0], 'k:', label=r'$\rho$ = 0.1')
+    plt.plot(xi, m[:, 0], label=r'$\rho$ = 0.1', linewidth= 1.8)
     plt.hold('on')
-    plt.plot(xi, m[:, 1], 'k-.', label=r'$\rho$ = 0.3')
-    plt.plot(xi, m[:, 2], 'k-', label=r'$\rho$ = 0.5')
-    plt.plot(xi, m[:, 3], 'k.', label=r'$\rho$ = 0.7')
-    plt.plot(xi, m[:, 4], 'k--', label=r'$\rho$ = 0.9')
+    plt.plot(xi, m[:, 1], label=r'$\rho$ = 0.3', linewidth= 1.8)
+    plt.plot(xi, m[:, 2], label=r'$\rho$ = 0.5', linewidth= 1.8)
+    plt.plot(xi, m[:, 3], label=r'$\rho$ = 0.7', linewidth= 1.8)
+    plt.plot(xi, m[:, 4], label=r'$\rho$ = 0.9', linewidth= 1.8)
     plt.axis([0, 1, 0, 1])
 
-    plt.title(u'El grado de adecuación marginal respecto a ' + r'$\rho$')
-    plt.xlabel('descriptor')
-    plt.ylabel(u'grado de adecuación marginal')
+    # plt.plot(xi, m[:, 0], 'k:', label=r'$\rho$ = 0.1')
+    # plt.hold('on')
+    # plt.plot(xi, m[:, 1], 'k-.', label=r'$\rho$ = 0.3')
+    # plt.plot(xi, m[:, 2], 'k-', label=r'$\rho$ = 0.5')
+    # plt.plot(xi, m[:, 3], 'k.', label=r'$\rho$ = 0.7')
+    # plt.plot(xi, m[:, 4], 'k--', label=r'$\rho$ = 0.9')
+    # plt.axis([0, 1, 0, 1])
+
+    #MADplt.title(u'MAD respect to ' + r'$\rho$')
+    plt.xlabel(r'$x_i$', fontsize=18)
+    plt.ylabel(r'$m_{i,k}$', fontsize=18)
 
     plt.legend(loc=9)
     plt.show()
