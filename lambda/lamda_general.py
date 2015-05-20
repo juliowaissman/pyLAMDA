@@ -97,8 +97,15 @@ class Lamda(object):
             gads[:, clase] = operador(mad)
         return gads
             
-# TODO: Hacer el sistema en forma de clase con métodos (Lambda)
 # TODO: Hacer varias funciones de operadores de agregación para poder aplicar en LAMDA
 
+def mixto_maxmin(mads, alpha):
+    """
+    Operador de agregación mixto utilizando min como t-norma y max como t-conorma.
+
+    # TODO: Acabar la documentación 
+
+    """
+    # TODO: acabar con la función prometida.
 
 
