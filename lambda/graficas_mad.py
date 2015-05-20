@@ -13,7 +13,7 @@ __author__ = 'juliowaissman'
 import numpy as np
 import matplotlib.pyplot as plt
 
-from lamda_general import mad
+from lamda_general import Lamda
 
 
 def grafica_mad():
@@ -26,7 +26,9 @@ def grafica_mad():
     x = np.c_[xi, xi, xi, xi, xi]
     rho = np.array([[.1, .3, .5, .7, .9]])
 
-    m = mad(rho, x)[0]
+    lamda = Lamda()
+    lamda.set_rho(np.array([[.1, .3, .5, .7, .9]]))
+    m = lamda.mad(x)[0]
 
     plt.plot(xi, m[:, 0], label=r'$\rho$ = 0.1', linewidth= 1.8)
     plt.hold('on')
