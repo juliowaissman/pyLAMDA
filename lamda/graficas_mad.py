@@ -1,25 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-graficas_mad.py
-------------
-Realiza las gráficas del grado de adecuación marginal
 
-
-"""
-
-__author__ = 'juliowaissman'
+__author__ = 'Julio Waissman Vilanova'
 
 import numpy as np
 import matplotlib.pyplot as plt
 
-from lamda_general import Lamda
+from lamda import Lamda
 
 
 def grafica_mad():
     """
-    Realiza la gráfica de los rho para diferentes x xomo lineas
+    Realiza la gráfica de los rho para diferentes x como lineas
 
+    Ejemplo
+
+    >>> grafica_mad()
 
     """
     xi = np.linspace(0, 1, 50)

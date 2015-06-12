@@ -1,0 +1,375 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Módulo lamda &mdash; pyLAMDA 0.1.0.1.0.1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0.1.0.1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="pyLAMDA 0.1.0.1.0.1.0.1 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">pyLAMDA 0.1.0.1.0.1.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="modulo-lamda">
+<h1>Módulo lamda<a class="headerlink" href="#modulo-lamda" title="Permalink to this headline">¶</a></h1>
+<p>En este módulo se encuentran las clases y funciones básicas para LAMDA,
+en particular:</p>
+<ol class="arabic simple">
+<li>La clase <cite>Lambda</cite> que encapsula las operaciones básicas de
+aprendizaje y reconocimiento de la metodología</li>
+<li>Funciones y decoradores con diferentes operadores de agregación.</li>
+</ol>
+<div class="section" id="module-lamda">
+<span id="contenido"></span><h2>Contenido<a class="headerlink" href="#module-lamda" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="lamda.Lamda">
+<em class="property">class </em><tt class="descclassname">lamda.</tt><tt class="descname">Lamda</tt><big>(</big><em>operador</em>, <em>descriptores=None</em>, <em>conceptos=None</em><big>)</big><a class="reference internal" href="_modules/lamda.html#Lamda"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lamda.Lamda" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<blockquote>
+<div><p>Clase contenedora de el método LAMDA con los módulos
+básicos, así como contenedor de los parámetros que definen
+el método LAMDA, tal como se definió por Jsep AGUILAR-MARTIN
+y Ramón LOPEZ de MANTRAS en su planteamiento original.</p>
+<p>En este sistema procuramos mantenernos alejados de las 
+modificaciones que se le hicieron al método que pierde sus
+propiedades naturales, tales como la de manejar para la
+toma de desición una escala bipolar uniescala (la cual en
+la versión inicial se considera simétrica).</p>
+<p>El sistema de reconocimiento consta de dos módulos principales:</p>
+<ol class="arabic simple">
+<li>El de calculo de adecuación marginal (MAD), el cual se realiza por
+paámetro y por clase.</li>
+<li>El calculo de grado de adecuación global (GAD), el cual se realiza
+por clase (independientemente de las otras clases).</li>
+</ol>
+<p>El sistema permite el uso de diversos operadores de agregación
+para el calculo del GAD, siempre y cuando cumplan con los requisitos
+necesarios. Por otra parte el MAD lo vamos a mantener fijo, por lo
+menos en una versión inicial.</p>
+</div></blockquote>
+<p>Para inicializar la clase Lambda, en principio muy sencillito</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">operador:</th><td class="field-body">Función tal que recibe un ndarray de dimensión n, m (con n objetos y
+m descriptores) y regrese un ndarray vector columna tal que en la
+posición i, aplique el operador de agregación seleccionad a los
+datos del i-ésimo renglon. Se puede generar con el decorador
+<cite>&#64;vectorize</cite>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">descriptores:</th><td class="field-body">Entero con el número de descriptores del problema. Si <cite>None</cite>
+entonces no se conocen a priori el número de descriptores</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">conceptos:</th><td class="field-body">Lista con el nombre de los conceptos (puden ser numeros enteros tambien),
+si <cite>None</cite>, se asume que no se conocen a priori.</td>
+</tr>
+</tbody>
+</table>
+<p>Este ejemplo se puede probar:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">lamda</span> <span class="o">=</span> <span class="n">Lamda</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">tnorma</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">))</span> <span class="c">#  Un objeto Lamda con el OA del mínimo</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lamda</span><span class="o">.</span><span class="n">aprendizaje_supervisado</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>  <span class="c">#  Aprende con los datos generados en x y y</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">yest</span><span class="p">,</span> <span class="n">gads</span><span class="p">)</span> <span class="o">=</span> <span class="n">lamda</span><span class="o">.</span><span class="n">reconoce</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">gads</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="s">&quot;rho = &quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="s">&quot;data =&quot;</span><span class="p">,</span> <span class="n">x</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="s">&quot;Clases = &quot;</span><span class="p">,</span> <span class="n">y</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="s">&quot;Estimados&quot;</span><span class="p">,</span> <span class="n">yest</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="s">&quot;Adecuaciones&quot;</span><span class="p">,</span> <span class="n">gads</span>
+</pre></div>
+</div>
+</div></blockquote>
+<dl class="method">
+<dt id="lamda.Lamda.aprendizaje_supervisado">
+<tt class="descname">aprendizaje_supervisado</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="reference internal" href="_modules/lamda.html#Lamda.aprendizaje_supervisado"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lamda.Lamda.aprendizaje_supervisado" title="Permalink to this definition">¶</a></dt>
+<dd><p>Aprendizaje supervisado de la forma tradicional como se conoce en LAMDA
+utilizando simplemente las medias para establecer los valores de Rho.</p>
+<p>En este caso no guarda los valores anteriores, y simplemente vuelve a
+hacer a la matriz rho desde 0. Las clases (sus equivalencias en dado caso)
+las guarda.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x</strong> &#8211; Un ndarray de shape (n, d) donde n es el número de objetos y
+d es el número de descriptores.</li>
+<li><strong>y</strong> &#8211; Un ndarray de shape (d) con los d valores de salida de los datos.
+si self.k ya existe, los elementos de otras clases nuevas no se
+considerarán y las clases sin datos se ponen todos los rhos a
+0.5. Si self.k es None, se genera a partir de los datos las
+clases. En todo caso, se inicializan los rhos a 0</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="lamda.Lamda.gad">
+<tt class="descname">gad</tt><big>(</big><em>mads</em><big>)</big><a class="reference internal" href="_modules/lamda.html#Lamda.gad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lamda.Lamda.gad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calcula el grado de adequación global para todas las clases</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mads</strong> &#8211; lista de k matrics [M1, ..., Mk] de tamaño n       imes d con los
+grados de adequación marginal de cada dato y cada descriptor en cada clase,
+tal como se calculan con la función mads</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">ndarray de dimensión n, k  con el grado de adecuación marginalde cada clase
+en cada dato, utilizando el operador de agregación.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="lamda.Lamda.mad">
+<tt class="descname">mad</tt><big>(</big><em>x</em><big>)</big><a class="reference internal" href="_modules/lamda.html#Lamda.mad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lamda.Lamda.mad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calcula el grado de adecuación marginal</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> &#8211; Un ndarray de T       imes n, donde T es el numero de ejemplos y n el de descriptores.
+Las entradas x_{ij} in [0, 1] son pertenencias a etiquetas. Para que se pueda
+realizar la operación, es necesario que <cite>x.shape[1] == self.rho.shape[1]</cite></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">[M1, M2, ..., MK] k matrices de tamaño de x con los grados de adecuación marginales para
+cada clase.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="lamda.Lamda.reconoce">
+<tt class="descname">reconoce</tt><big>(</big><em>x</em>, <em>criterio='max'</em>, <em>gads=False</em><big>)</big><a class="reference internal" href="_modules/lamda.html#Lamda.reconoce"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lamda.Lamda.reconoce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Realiza el reconocimiento de un conjunto de variables por reconocer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> &#8211; Un ndarray de shape (n, d) donde n es el número de objetos y
+d es el número de descriptores.</li>
+<li><strong>criterio</strong> &#8211; Si &#8216;max&#8217; entonces asigna a la clase con mayor GAD</li>
+<li><strong>gads</strong> &#8211; Booleano, si True, devuelve una matriz de grados de adequación
+de dimensión (n, len(k))</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Un ndarray de una dimensión con las clases asignadas a cada objeto
+y si el parámetro gads es True, una tupla con la asignación, y con las
+adecuaciones globales.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="lamda.op_compensacion">
+<tt class="descclassname">lamda.</tt><tt class="descname">op_compensacion</tt><big>(</big><em>*args</em><big>)</big><a class="reference internal" href="_modules/lamda.html#op_compensacion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lamda.op_compensacion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Operador de agregación mixto</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x</strong> &#8211; Un ndarray de shape (n, d) donde n es el número de objetos y
+d es el número de descriptores, o un ndarray de shape (n).</li>
+<li><strong>tnorma</strong> &#8211; Una función que recibe un vector y devuelve un número</li>
+<li><strong>tconorma</strong> &#8211; Una función que recibe un vector y devuelve un número</li>
+<li><strong>alpha</strong> &#8211; un valor entre 0 y 1</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>:return Un ndarray de dimensión (n) con la aplicación de la T-norma a cada caso, o un número en su caso</p>
+<p>Ejemplo:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">om_9</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">op_compensacion</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">],[</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">om_9</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="lamda.tnorma">
+<tt class="descclassname">lamda.</tt><tt class="descname">tnorma</tt><big>(</big><em>*args</em><big>)</big><a class="reference internal" href="_modules/lamda.html#tnorma"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lamda.tnorma" title="Permalink to this definition">¶</a></dt>
+<dd><p>Una t-norma en forma genérica para funcionar en la clase Lamda como operador de agregación</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> &#8211; Un ndarray de shape (n, d) donde n es el número de objetos y
+d es el número de descriptores, o un ndarray de shape (n).</li>
+<li><strong>fun</strong> &#8211; Una función que recibe un ndarray de una dimensión y regresa un numero. Se asume que la función
+va a ser una T-norma, pero no se verifica.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Un ndarray de dimensión (n) con la aplicación de la T-norma a cada caso, o un número en su caso</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Ejemplo:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">min_tnorma</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">tnorma</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">min_tnorma</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]]))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="lamda.triple_prod">
+<tt class="descclassname">lamda.</tt><tt class="descname">triple_prod</tt><big>(</big><em>*args</em><big>)</big><a class="reference internal" href="_modules/lamda.html#triple_prod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lamda.triple_prod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Operador triple producto tal como lo define Yager en el artículo de
+operadores de agregación completamente reforzados.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> &#8211; Un ndarray de shape (n, d) donde n es el número de objetos y
+d es el número de descriptores, o un ndarray de shape (n).</td>
+</tr>
+</tbody>
+</table>
+<p>:return Un ndarray de dimensión (n) con la aplicación de la T-norma a cada caso, o un número en su caso</p>
+<p>Ejemplo:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">],[</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">triple_prod</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="lamda.vectoriza">
+<tt class="descclassname">lamda.</tt><tt class="descname">vectoriza</tt><big>(</big><em>oa</em><big>)</big><a class="reference internal" href="_modules/lamda.html#vectoriza"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lamda.vectoriza" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorador para utilizar un operador de agregación dentro de LAMDA</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>oa</strong> &#8211; Un operador de agregación que funciona sobre un ndarray de
+una dimensión y regresa un valor numérico. El primer parámetro
+de la función oa debe de ser un ndarray de una dimensión, y
+los restantes parámetro que definan el operador</td>
+</tr>
+</tbody>
+</table>
+<p>:return Un operador modificado</p>
+<p>Ejemplo:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="nd">@vectoriza</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">luk_tn</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="s">&quot;T-norma de luckasiewicz&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>y se puede probar con</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">luk</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span> <span class="o">.</span><span class="mi">99</span><span class="p">,</span> <span class="o">.</span><span class="mi">99</span><span class="p">],[</span><span class="o">.</span><span class="mi">9</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">]]))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Módulo lamda</a><ul>
+<li><a class="reference internal" href="#module-lamda">Contenido</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/lamda.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">pyLAMDA 0.1.0.1.0.1.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Julio Waissman Vilanova.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

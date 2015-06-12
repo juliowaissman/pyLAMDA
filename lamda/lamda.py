@@ -1,15 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-lamda_general.py
-------------
-
-Las funciones generales de LAMDA
-
-"""
-
 
 import numpy as np
+from functools import wraps
 
 
 class Lamda(object):
@@ -37,6 +30,35 @@ class Lamda(object):
     para el calculo del GAD, siempre y cuando cumplan con los requisitos
     necesarios. Por otra parte el MAD lo vamos a mantener fijo, por lo
     menos en una versión inicial.
+
+   Para inicializar la clase Lambda, en principio muy sencillito
+
+    :operador: Función tal que recibe un ndarray de dimensión n, m (con n objetos y
+                     m descriptores) y regrese un ndarray vector columna tal que en la
+                     posición i, aplique el operador de agregación seleccionad a los
+                     datos del i-ésimo renglon. Se puede generar con el decorador
+                     `@vectorize`.
+
+    :descriptores: Entero con el número de descriptores del problema. Si `None`
+                   entonces no se conocen a priori el número de descriptores
+
+    :conceptos: Lista con el nombre de los conceptos (puden ser numeros enteros tambien),
+                si `None`, se asume que no se conocen a priori.
+
+
+    Este ejemplo se puede probar:
+
+    >>> lamda = Lamda(lambda x: tnorma(x, np.min)) #  Un objeto Lamda con el OA del mínimo
+    >>> x = np.random.random((10, 3))
+    >>> y = np.array([1, 3, 1, 3, 3, 3, 1, 1, 1, 3])
+    >>> lamda.aprendizaje_supervisado(x, y)  #  Aprende con los datos generados en x y y
+    >>> (yest, gads) = lamda.reconoce(x, gads=True)
+    >>> print "rho = "
+    >>> print "data =", x
+    >>> print "Clases = ", y
+    >>> print "Estimados", yest
+    >>> print "Adecuaciones", gads
+
 
     """
     
@@ -158,24 +180,26 @@ def vectoriza(oa):
     """
     Decorador para utilizar un operador de agregación dentro de LAMDA
 
-    param oa: Un operador de agregación que funciona sobre un ndarray de
+    :param oa: Un operador de agregación que funciona sobre un ndarray de
               una dimensión y regresa un valor numérico. El primer parámetro
               de la función oa debe de ser un ndarray de una dimensión, y
               los restantes parámetro que definan el operador
 
-    return Un operador modificado
+    :return Un operador modificado
 
     Ejemplo:
 
-    @vectoriza
-    def luk_tn(x):
-        "T-norma de luckasiewicz"
-        return max(sum(x) - x.size + 1, 0)
+    >>> @vectoriza
+    >>> def luk_tn(x):
+    >>>     "T-norma de luckasiewicz"
+    >>>     return max(sum(x) - x.size + 1, 0)
 
     y se puede probar con
-    luk(np.array([[.5, .5, .5],[0, .99, .99],[.9, .9, .9]]))
+
+    >>> luk(np.array([[.5, .5, .5],[0, .99, .99],[.9, .9, .9]]))
 
     """
+    @wraps(oa)
     def _oa(*args):
         if type(args[0]) != np.ndarray or args[0].ndim > 2:
             raise TypeError("Debe de ser un ndarray de 1 o 2 dimensiones")
@@ -190,7 +214,21 @@ def vectoriza(oa):
 
 @vectoriza
 def tnorma(x, fun):
-    "Simplemente para vectorizar una t-norma"
+    """
+    Una t-norma en forma genérica para funcionar en la clase Lamda como operador de agregación
+
+    :param x: Un ndarray de shape (n, d) donde n es el número de objetos y
+              d es el número de descriptores, o un ndarray de shape (n).
+    :param fun: Una función que recibe un ndarray de una dimensión y regresa un numero. Se asume que la función
+                va a ser una T-norma, pero no se verifica.
+    :return: Un ndarray de dimensión (n) con la aplicación de la T-norma a cada caso, o un número en su caso
+
+    Ejemplo:
+
+    >>> min_tnorma = lambda x: tnorma(x, np.min)
+    >>> min_tnorma(np.array([[0, 0.9, 0.9], [0.5, 0.5, 0.5]]))
+
+    """
     return fun(x)
 
 @vectoriza
@@ -198,16 +236,19 @@ def op_compensacion(x, tnorma, tconorma, alpha):
     """
     Operador de agregación mixto
 
-    @param x: Un ndarray de una dimensión
-    @param tnorma: Una función que recibe un vector y devuelve un número
-    @param tconorma: Una función que recibe un vector y devuelve un número
-    @alpha: un valor entre 0 y 1
+    :param x: Un ndarray de shape (n, d) donde n es el número de objetos y
+              d es el número de descriptores, o un ndarray de shape (n).
+    :param tnorma: Una función que recibe un vector y devuelve un número
+    :param tconorma: Una función que recibe un vector y devuelve un número
+    :param alpha: un valor entre 0 y 1
 
-    @return el operador
+    :return Un ndarray de dimensión (n) con la aplicación de la T-norma a cada caso, o un número en su caso
 
-    ejemplo:
+    Ejemplo:
     
-    om_7 = lambda x: op_compensacion(x, np.min, np.max, 0.7)
+    >>> om_9 = lambda x: op_compensacion(x, np.min, np.max, 0.9)
+    >>> a = np.array([[0, .9, .5],[1, .9, .5],[.1, .1, .1], [.5, .5, .5]])
+    >>> om_9(a)
 
     """
     if 0 > alpha or alpha > 1:
@@ -221,9 +262,15 @@ def triple_prod(x):
     Operador triple producto tal como lo define Yager en el artículo de
     operadores de agregación completamente reforzados.
 
-    param x: Un ndarray de 1 dimensión
+    :param x: Un ndarray de shape (n, d) donde n es el número de objetos y
+              d es el número de descriptores, o un ndarray de shape (n).
 
-    return un número
+    :return Un ndarray de dimensión (n) con la aplicación de la T-norma a cada caso, o un número en su caso
+
+    Ejemplo:
+
+    >>> a = np.array([[0, .9, .5],[1, .9, .5],[.1, .1, .1], [.5, .5, .5]])
+    >>> triple_prod(a)
 
     """
     return np.prod(x) / (np.prod(x) + np.prod(1 - x))

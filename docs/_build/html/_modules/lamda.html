@@ -1,0 +1,423 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>lamda &mdash; pyLAMDA 0.1.0.1.0.1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.0.1.0.1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="pyLAMDA 0.1.0.1.0.1.0.1 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">pyLAMDA 0.1.0.1.0.1.0.1 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for lamda</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+
+
+<div class="viewcode-block" id="Lamda"><a class="viewcode-back" href="../lamda.html#lamda.Lamda">[docs]</a><span class="k">class</span> <span class="nc">Lamda</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Clase contenedora de el método LAMDA con los módulos</span>
+<span class="sd">    básicos, así como contenedor de los parámetros que definen</span>
+<span class="sd">    el método LAMDA, tal como se definió por Jsep AGUILAR-MARTIN</span>
+<span class="sd">    y Ramón LOPEZ de MANTRAS en su planteamiento original.</span>
+
+<span class="sd">    En este sistema procuramos mantenernos alejados de las </span>
+<span class="sd">    modificaciones que se le hicieron al método que pierde sus</span>
+<span class="sd">    propiedades naturales, tales como la de manejar para la</span>
+<span class="sd">    toma de desición una escala bipolar uniescala (la cual en</span>
+<span class="sd">    la versión inicial se considera simétrica).</span>
+
+<span class="sd">    El sistema de reconocimiento consta de dos módulos principales:</span>
+
+<span class="sd">    1. El de calculo de adecuación marginal (MAD), el cual se realiza por</span>
+<span class="sd">       paámetro y por clase.</span>
+
+<span class="sd">    2. El calculo de grado de adecuación global (GAD), el cual se realiza</span>
+<span class="sd">       por clase (independientemente de las otras clases).</span>
+
+<span class="sd">    El sistema permite el uso de diversos operadores de agregación</span>
+<span class="sd">    para el calculo del GAD, siempre y cuando cumplan con los requisitos</span>
+<span class="sd">    necesarios. Por otra parte el MAD lo vamos a mantener fijo, por lo</span>
+<span class="sd">    menos en una versión inicial.</span>
+
+<span class="sd">   Para inicializar la clase Lambda, en principio muy sencillito</span>
+
+<span class="sd">    :operador: Función tal que recibe un ndarray de dimensión n, m (con n objetos y</span>
+<span class="sd">                     m descriptores) y regrese un ndarray vector columna tal que en la</span>
+<span class="sd">                     posición i, aplique el operador de agregación seleccionad a los</span>
+<span class="sd">                     datos del i-ésimo renglon. Se puede generar con el decorador</span>
+<span class="sd">                     `@vectorize`.</span>
+
+<span class="sd">    :descriptores: Entero con el número de descriptores del problema. Si `None`</span>
+<span class="sd">                   entonces no se conocen a priori el número de descriptores</span>
+
+<span class="sd">    :conceptos: Lista con el nombre de los conceptos (puden ser numeros enteros tambien),</span>
+<span class="sd">                si `None`, se asume que no se conocen a priori.</span>
+
+
+<span class="sd">    Este ejemplo se puede probar:</span>
+
+<span class="sd">    &gt;&gt;&gt; lamda = Lamda(lambda x: tnorma(x, np.min)) #  Un objeto Lamda con el OA del mínimo</span>
+<span class="sd">    &gt;&gt;&gt; x = np.random.random((10, 3))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([1, 3, 1, 3, 3, 3, 1, 1, 1, 3])</span>
+<span class="sd">    &gt;&gt;&gt; lamda.aprendizaje_supervisado(x, y)  #  Aprende con los datos generados en x y y</span>
+<span class="sd">    &gt;&gt;&gt; (yest, gads) = lamda.reconoce(x, gads=True)</span>
+<span class="sd">    &gt;&gt;&gt; print &quot;rho = &quot;</span>
+<span class="sd">    &gt;&gt;&gt; print &quot;data =&quot;, x</span>
+<span class="sd">    &gt;&gt;&gt; print &quot;Clases = &quot;, y</span>
+<span class="sd">    &gt;&gt;&gt; print &quot;Estimados&quot;, yest</span>
+<span class="sd">    &gt;&gt;&gt; print &quot;Adecuaciones&quot;, gads</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operador</span><span class="p">,</span> <span class="n">descriptores</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">conceptos</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inicializa la clase Lambda. En principio muy sencillotoooo</span>
+
+<span class="sd">        :param operador: función tal que recibe un ndarray de dimensión n, m (con n objetos y</span>
+<span class="sd">                         m descriptores) y regrese un ndarray vector columna tal que en la</span>
+<span class="sd">                         posición i, aplique el operador de agregación seleccionad a los</span>
+<span class="sd">                         datos del i´-ésimo renglon. Se puede generar con el decorador</span>
+<span class="sd">                         @vectorize</span>
+
+<span class="sd">        :param descriptores: Entero con el número de descriptores del problema. Si None</span>
+<span class="sd">                             entonces no se conocen a priori el número de descriptores</span>
+
+<span class="sd">        :param conceptos: Lista con el nombre de los conceptos (puden ser numeros enteros tambien),</span>
+<span class="sd">                          Si None, se asume que no se conocen a priori.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">d</span> <span class="o">=</span> <span class="n">descriptores</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span> <span class="o">=</span> <span class="n">conceptos</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rho</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="n">d</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operador</span> <span class="o">=</span> <span class="n">operador</span>
+
+<div class="viewcode-block" id="Lamda.mad"><a class="viewcode-back" href="../lamda.html#lamda.Lamda.mad">[docs]</a>    <span class="k">def</span> <span class="nf">mad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calcula el grado de adecuación marginal</span>
+
+<span class="sd">        :param x: Un ndarray de T \times n, donde T es el numero de ejemplos y n el de descriptores.</span>
+<span class="sd">                  Las entradas x_{ij} \in [0, 1] son pertenencias a etiquetas. Para que se pueda</span>
+<span class="sd">                  realizar la operación, es necesario que `x.shape[1] == self.rho.shape[1]`</span>
+
+<span class="sd">        :return: [M1, M2, ..., MK] k matrices de tamaño de x con los grados de adecuación marginales para</span>
+<span class="sd">                 cada clase.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mads</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rho</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">mads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">mads</span>
+</div>
+<div class="viewcode-block" id="Lamda.gad"><a class="viewcode-back" href="../lamda.html#lamda.Lamda.gad">[docs]</a>    <span class="k">def</span> <span class="nf">gad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mads</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calcula el grado de adequación global para todas las clases</span>
+
+<span class="sd">        :param mads: lista de k matrics [M1, ..., Mk] de tamaño n \times d con los</span>
+<span class="sd">                     grados de adequación marginal de cada dato y cada descriptor en cada clase,</span>
+<span class="sd">                     tal como se calculan con la función mads</span>
+<span class="sd">        </span>
+<span class="sd">        :return: ndarray de dimensión n, k  con el grado de adecuación marginalde cada clase</span>
+<span class="sd">                 en cada dato, utilizando el operador de agregación.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">gads</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">mads</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">mads</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">clase</span><span class="p">,</span> <span class="n">mad</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mads</span><span class="p">):</span>
+            <span class="n">gads</span><span class="p">[:,</span> <span class="n">clase</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">operador</span><span class="p">(</span><span class="n">mad</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">gads</span>
+            </div>
+<div class="viewcode-block" id="Lamda.aprendizaje_supervisado"><a class="viewcode-back" href="../lamda.html#lamda.Lamda.aprendizaje_supervisado">[docs]</a>    <span class="k">def</span> <span class="nf">aprendizaje_supervisado</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Aprendizaje supervisado de la forma tradicional como se conoce en LAMDA</span>
+<span class="sd">        utilizando simplemente las medias para establecer los valores de Rho.</span>
+
+<span class="sd">        En este caso no guarda los valores anteriores, y simplemente vuelve a</span>
+<span class="sd">        hacer a la matriz rho desde 0. Las clases (sus equivalencias en dado caso)</span>
+<span class="sd">        las guarda.</span>
+
+<span class="sd">        :param x: Un ndarray de shape (n, d) donde n es el número de objetos y</span>
+<span class="sd">                  d es el número de descriptores.</span>
+
+<span class="sd">        :param y: Un ndarray de shape (d) con los d valores de salida de los datos.</span>
+<span class="sd">                  si self.k ya existe, los elementos de otras clases nuevas no se</span>
+<span class="sd">                  considerarán y las clases sin datos se ponen todos los rhos a</span>
+<span class="sd">                  0.5. Si self.k es None, se genera a partir de los datos las</span>
+<span class="sd">                  clases. En todo caso, se inicializan los rhos a 0</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">!=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Los descriptores no concuerdan con la dimensión de los datos&quot;</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rho</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">))</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">clase</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">clase</span> <span class="ow">in</span> <span class="n">y</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="n">clase</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="Lamda.reconoce"><a class="viewcode-back" href="../lamda.html#lamda.Lamda.reconoce">[docs]</a>    <span class="k">def</span> <span class="nf">reconoce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">criterio</span><span class="o">=</span><span class="s">&#39;max&#39;</span><span class="p">,</span> <span class="n">gads</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Realiza el reconocimiento de un conjunto de variables por reconocer.</span>
+
+<span class="sd">        :param x: Un ndarray de shape (n, d) donde n es el número de objetos y</span>
+<span class="sd">                  d es el número de descriptores.</span>
+
+<span class="sd">        :param criterio: Si &#39;max&#39; entonces asigna a la clase con mayor GAD</span>
+
+<span class="sd">        :param gads: Booleano, si True, devuelve una matriz de grados de adequación</span>
+<span class="sd">                     de dimensión (n, len(k))</span>
+
+<span class="sd">        :return: Un ndarray de una dimensión con las clases asignadas a cada objeto</span>
+<span class="sd">                 y si el parámetro gads es True, una tupla con la asignación, y con las</span>
+<span class="sd">                 adecuaciones globales.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;La entrada no concuerda en dimensiones con los descriptores&quot;</span><span class="p">)</span>
+        <span class="n">globales</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mad</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">asigna</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="k">lambda</span> <span class="n">ind</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">[</span><span class="n">ind</span><span class="p">])</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">asigna</span><span class="p">(</span><span class="n">globales</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span> <span class="n">globales</span><span class="p">)</span> <span class="k">if</span> <span class="n">gads</span> <span class="k">else</span> <span class="n">asigna</span><span class="p">(</span><span class="n">globales</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+</div></div>
+<div class="viewcode-block" id="vectoriza"><a class="viewcode-back" href="../lamda.html#lamda.vectoriza">[docs]</a><span class="k">def</span> <span class="nf">vectoriza</span><span class="p">(</span><span class="n">oa</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorador para utilizar un operador de agregación dentro de LAMDA</span>
+
+<span class="sd">    :param oa: Un operador de agregación que funciona sobre un ndarray de</span>
+<span class="sd">              una dimensión y regresa un valor numérico. El primer parámetro</span>
+<span class="sd">              de la función oa debe de ser un ndarray de una dimensión, y</span>
+<span class="sd">              los restantes parámetro que definan el operador</span>
+
+<span class="sd">    :return Un operador modificado</span>
+
+<span class="sd">    Ejemplo:</span>
+
+<span class="sd">    &gt;&gt;&gt; @vectoriza</span>
+<span class="sd">    &gt;&gt;&gt; def luk_tn(x):</span>
+<span class="sd">    &gt;&gt;&gt;     &quot;T-norma de luckasiewicz&quot;</span>
+<span class="sd">    &gt;&gt;&gt;     return max(sum(x) - x.size + 1, 0)</span>
+
+<span class="sd">    y se puede probar con</span>
+
+<span class="sd">    &gt;&gt;&gt; luk(np.array([[.5, .5, .5],[0, .99, .99],[.9, .9, .9]]))</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">oa</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_oa</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="ow">or</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;Debe de ser un ndarray de 1 o 2 dimensiones&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">oa</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">oa</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">,:])</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">oa</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">,:],</span> <span class="o">*</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="k">return</span> <span class="n">y</span>
+    <span class="k">return</span> <span class="n">_oa</span>
+
+</div>
+<span class="nd">@vectoriza</span>
+<div class="viewcode-block" id="tnorma"><a class="viewcode-back" href="../lamda.html#lamda.tnorma">[docs]</a><span class="k">def</span> <span class="nf">tnorma</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fun</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Una t-norma en forma genérica para funcionar en la clase Lamda como operador de agregación</span>
+
+<span class="sd">    :param x: Un ndarray de shape (n, d) donde n es el número de objetos y</span>
+<span class="sd">              d es el número de descriptores, o un ndarray de shape (n).</span>
+<span class="sd">    :param fun: Una función que recibe un ndarray de una dimensión y regresa un numero. Se asume que la función</span>
+<span class="sd">                va a ser una T-norma, pero no se verifica.</span>
+<span class="sd">    :return: Un ndarray de dimensión (n) con la aplicación de la T-norma a cada caso, o un número en su caso</span>
+
+<span class="sd">    Ejemplo:</span>
+
+<span class="sd">    &gt;&gt;&gt; min_tnorma = lambda x: tnorma(x, np.min)</span>
+<span class="sd">    &gt;&gt;&gt; min_tnorma(np.array([[0, 0.9, 0.9], [0.5, 0.5, 0.5]]))</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">fun</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</div>
+<span class="nd">@vectoriza</span>
+<div class="viewcode-block" id="op_compensacion"><a class="viewcode-back" href="../lamda.html#lamda.op_compensacion">[docs]</a><span class="k">def</span> <span class="nf">op_compensacion</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tnorma</span><span class="p">,</span> <span class="n">tconorma</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Operador de agregación mixto</span>
+
+<span class="sd">    :param x: Un ndarray de shape (n, d) donde n es el número de objetos y</span>
+<span class="sd">              d es el número de descriptores, o un ndarray de shape (n).</span>
+<span class="sd">    :param tnorma: Una función que recibe un vector y devuelve un número</span>
+<span class="sd">    :param tconorma: Una función que recibe un vector y devuelve un número</span>
+<span class="sd">    :param alpha: un valor entre 0 y 1</span>
+
+<span class="sd">    :return Un ndarray de dimensión (n) con la aplicación de la T-norma a cada caso, o un número en su caso</span>
+
+<span class="sd">    Ejemplo:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; om_9 = lambda x: op_compensacion(x, np.min, np.max, 0.9)</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[0, .9, .5],[1, .9, .5],[.1, .1, .1], [.5, .5, .5]])</span>
+<span class="sd">    &gt;&gt;&gt; om_9(a)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="mi">0</span> <span class="o">&gt;</span> <span class="n">alpha</span> <span class="ow">or</span> <span class="n">alpha</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;alpha entre 0 y 1&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">tnorma</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">tconorma</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+</div>
+<span class="nd">@vectoriza</span>
+<div class="viewcode-block" id="triple_prod"><a class="viewcode-back" href="../lamda.html#lamda.triple_prod">[docs]</a><span class="k">def</span> <span class="nf">triple_prod</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Operador triple producto tal como lo define Yager en el artículo de</span>
+<span class="sd">    operadores de agregación completamente reforzados.</span>
+
+<span class="sd">    :param x: Un ndarray de shape (n, d) donde n es el número de objetos y</span>
+<span class="sd">              d es el número de descriptores, o un ndarray de shape (n).</span>
+
+<span class="sd">    :return Un ndarray de dimensión (n) con la aplicación de la T-norma a cada caso, o un número en su caso</span>
+
+<span class="sd">    Ejemplo:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([[0, .9, .5],[1, .9, .5],[.1, .1, .1], [.5, .5, .5]])</span>
+<span class="sd">    &gt;&gt;&gt; triple_prod(a)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">))</span>
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="k">print</span> <span class="s">&quot;El unittest de los que no sabemos hacerlas todavía&quot;</span>
+
+    <span class="k">print</span> <span class="s">&quot;Probando los operadores de agregación&quot;</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">],[</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">]])</span>
+    <span class="k">print</span> <span class="s">&quot;Matriz para probar los oa&quot;</span>
+    <span class="k">print</span> <span class="n">a</span>
+
+    <span class="nd">@vectoriza</span>
+    <span class="k">def</span> <span class="nf">luck_tn</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="s">&quot;T-norma de luckasiewicz&quot;</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="s">&quot;Luckasiewicz&quot;</span>
+    <span class="k">print</span> <span class="n">luck_tn</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="s">&quot;Triple producto&quot;</span>
+    <span class="k">print</span> <span class="n">triple_prod</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="n">om_9</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">op_compensacion</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;O. compensación min/max con exigencia 0.9&quot;</span>
+    <span class="k">print</span> <span class="n">om_9</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="s">&quot;Probando generar un objeto tipo Lamda y aprendizaje básico&quot;</span>
+
+    <span class="k">print</span> <span class="s">&quot;Un objeto Lamda con el mínimo&quot;</span>
+    <span class="n">lamda</span> <span class="o">=</span> <span class="n">Lamda</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">tnorma</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">))</span>
+    <span class="k">print</span> <span class="s">&quot;rho = &quot;</span>
+    <span class="k">print</span> <span class="n">lamda</span><span class="o">.</span><span class="n">rho</span>
+
+    <span class="k">print</span> <span class="s">&quot;Clases =&quot;</span>
+    <span class="k">print</span> <span class="n">lamda</span><span class="o">.</span><span class="n">d</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+    <span class="k">print</span> <span class="s">&quot;data =&quot;</span>
+    <span class="k">print</span> <span class="n">x</span>
+    <span class="k">print</span> <span class="s">&quot;Clases = &quot;</span>
+    <span class="k">print</span> <span class="n">y</span>
+
+    <span class="n">lamda</span><span class="o">.</span><span class="n">aprendizaje_supervisado</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;rho = &quot;</span>
+    <span class="k">print</span> <span class="n">lamda</span><span class="o">.</span><span class="n">rho</span>
+
+    <span class="k">print</span> <span class="s">&quot;Clases =&quot;</span>
+    <span class="k">print</span> <span class="n">lamda</span><span class="o">.</span><span class="n">k</span>
+
+    <span class="p">(</span><span class="n">yest</span><span class="p">,</span> <span class="n">gads</span><span class="p">)</span> <span class="o">=</span> <span class="n">lamda</span><span class="o">.</span><span class="n">reconoce</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">gads</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;Estimados&quot;</span>
+    <span class="k">print</span> <span class="n">yest</span>
+    <span class="k">print</span> <span class="s">&quot;Adecuaciones&quot;</span>
+    <span class="k">print</span> <span class="n">gads</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">pyLAMDA 0.1.0.1.0.1.0.1 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Julio Waissman Vilanova.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
