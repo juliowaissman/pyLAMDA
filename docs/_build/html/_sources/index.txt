@@ -6,7 +6,7 @@
 pyLAMDA
 ===================================
 
-Un modulo de Python para desarrollar operadores, mñetodos y
+Un modulo de Python para desarrollar operadores, métodos y
 aplicaciónes del método LAMDA de aprendizaje difuso supervisado
 y no supervisado.
 
@@ -19,10 +19,9 @@ y no supervisado.
 
 
 
-Indices and tables
-==================
+Referencias
+--------------
 
-* :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
 
