@@ -64,7 +64,7 @@ class Lamda(object):
     
     def __init__(self, operador, descriptores=None, conceptos=None):
         """
-        Inicializa la clase Lambda. En principio muy sencillotoooo
+        Inicializa la clase Lambda. En principio muy sencilloto
 
         :param operador: función tal que recibe un ndarray de dimensión n, m (con n objetos y
                          m descriptores) y regrese un ndarray vector columna tal que en la
@@ -152,6 +152,17 @@ class Lamda(object):
                 self.rho[i, :] = x[y == clase, :].mean(axis=0)
         return True
 
+    # TODO Metodo de aprendizaje no supervisado en linea clasico
+    def aprendizaje_no_supervisado(self, x):
+
+        # Inicializa las variables de aprendizaje, así como el umbral mínimo
+        self.d = x.shape[1]
+        umbral = float(self.gad([0.5 * np.ones((1, self.d))]))
+
+
+
+
+
     def reconoce(self, x, criterio='max', gads=False):
         """
         Realiza el reconocimiento de un conjunto de variables por reconocer.
@@ -196,7 +207,7 @@ def vectoriza(oa):
 
     y se puede probar con
 
-    >>> luk(np.array([[.5, .5, .5],[0, .99, .99],[.9, .9, .9]]))
+    >>> luk_tn(np.array([[.5, .5, .5],[0, .99, .99],[.9, .9, .9]]))
 
     """
     @wraps(oa)
