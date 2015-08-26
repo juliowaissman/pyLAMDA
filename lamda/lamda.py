@@ -152,16 +152,26 @@ class Lamda(object):
                 self.rho[i, :] = x[y == clase, :].mean(axis=0)
         return True
 
-    # TODO Metodo de aprendizaje no supervisado en linea clasico
     def aprendizaje_no_supervisado(self, x):
+        # TODO: Documentar el método aprendizaje_no_supervisado
 
         # Inicializa las variables de aprendizaje, así como el umbral mínimo
         self.d = x.shape[1]
         umbral = float(self.gad([0.5 * np.ones((1, self.d))]))
 
-
-
-
+        # Empieza el aprendizaje iterativo
+        for xi in x:
+            # Inicializa el primer concepto
+            if self.rho is None:
+                self.rho = xi.reshape(1, -1)
+                continue
+            y_est, gad = self.reconoce(xi.reshape(1, -1), gads= True)
+            if gad.max() < umbral:
+                self.rho = np.r_[self.rho, xi.reshape(1, -1)]
+            else:
+                i = gad.argmax()
+                self.rho[i, :] += (1/alpha) * (self.rho[i, :] + ) # FIXME: Todavía no funciona la ecuación
+        # TODO: Hacer la parte de finalización del algoritmo
 
     def reconoce(self, x, criterio='max', gads=False):
         """
@@ -184,7 +194,8 @@ class Lamda(object):
             raise ValueError("La entrada no concuerda en dimensiones con los descriptores")
         globales = self.gad(self.mad(x))
         asigna = np.vectorize(lambda ind: self.k[ind])
-        return (asigna(globales.argmax(axis=1)), globales) if gads else asigna(globales.argmax(axis=1))
+        asignacion = asigna(globales.argmax(axis=1))
+        return (asignacion, globales) if gads else asignacion
 
 
 def vectoriza(oa):

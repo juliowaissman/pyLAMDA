@@ -35,6 +35,10 @@ def prueba_umbral():
 
     return True
 
+# TODO: Banco de pruebas para el aprendizaje no supervisado, caso sencillo
+
+# TODO: Ejemplo a mano de como funciona el aprendizaje no supervisado en linea
+
 
 if __name__ == '__main__':
 
