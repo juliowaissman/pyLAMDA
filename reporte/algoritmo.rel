@@ -1,0 +1,54 @@
+;; RefTeX parse info file
+;; File: /Users/juliowaissman/Documents/github/pyLAMDA/reporte/algoritmo.tex
+;; User: juliowaissman (Julio Waissman Vilanova)
+
+(set reftex-docstruct-symbol '(
+
+
+(xr nil "\\\\\\\\\\\\")
+
+(index-tags)
+
+(is-multi nil)
+
+(bibview-cache)
+
+(master-dir . "/Users/juliowaissman/Documents/github/pyLAMDA/reporte/")
+
+(label-numbers)
+
+(bof "/Users/juliowaissman/Documents/github/pyLAMDA/reporte/algoritmo.tex")
+
+(toc "toc" "    1 Introducción" "/Users/juliowaissman/Documents/github/pyLAMDA/reporte/algoritmo.tex" nil 2 "1" "\\section{Introducción}" 1275)
+
+("sec:introduccion" "s" nil "/Users/juliowaissman/Documents/github/pyLAMDA/reporte/algoritmo.tex" nil "")
+
+(toc "toc" "    2 Escalas bipolares" "/Users/juliowaissman/Documents/github/pyLAMDA/reporte/algoritmo.tex" nil 2 "2" "\\section{Escalas bipolares}" 1324)
+
+("sec:escalas-bipolares" "s" nil "/Users/juliowaissman/Documents/github/pyLAMDA/reporte/algoritmo.tex" nil "")
+
+(toc "toc" "    3 El método LAMDA" "/Users/juliowaissman/Documents/github/pyLAMDA/reporte/algoritmo.tex" nil 2 "3" "\\section{El método LAMDA}" 1570)
+
+("sec:el-metodo-lamda" "s" nil "/Users/juliowaissman/Documents/github/pyLAMDA/reporte/algoritmo.tex" nil "")
+
+(toc "toc" "    4 Generalización a escala bipolar" "/Users/juliowaissman/Documents/github/pyLAMDA/reporte/algoritmo.tex" nil 2 "4" "\\section{Generalización a escala bipolar}" 1952)
+
+("sec:gener-escala-bipol" "s" nil "/Users/juliowaissman/Documents/github/pyLAMDA/reporte/algoritmo.tex" nil "")
+
+(toc "toc" "    5 Aprendizaje Supervisado" "/Users/juliowaissman/Documents/github/pyLAMDA/reporte/algoritmo.tex" nil 2 "5" "\\section{Aprendizaje Supervisado}" 2246)
+
+("sec:aprend-superv" "s" nil "/Users/juliowaissman/Documents/github/pyLAMDA/reporte/algoritmo.tex" nil "")
+
+(toc "toc" "    6 Aprendizaje no supervisado" "/Users/juliowaissman/Documents/github/pyLAMDA/reporte/algoritmo.tex" nil 2 "6" "\\section{Aprendizaje no supervisado}" 2307)
+
+("sec:aprend-no-superv" "s" nil "/Users/juliowaissman/Documents/github/pyLAMDA/reporte/algoritmo.tex" nil "")
+
+(toc "toc" "    7 Conclusiones y trabajos futuros" "/Users/juliowaissman/Documents/github/pyLAMDA/reporte/algoritmo.tex" nil 2 "7" "\\section{Conclusiones y trabajos futuros}" 2374)
+
+("sec:concl-y-trab" "s" nil "/Users/juliowaissman/Documents/github/pyLAMDA/reporte/algoritmo.tex" nil "")
+
+(toc "toc" "    1 Introducción" "/Users/juliowaissman/Documents/github/pyLAMDA/reporte/algoritmo.tex" nil 2 "1" "\\section{Introducción}" 1275)
+
+(eof "/Users/juliowaissman/Documents/github/pyLAMDA/reporte/algoritmo.tex")
+))
+

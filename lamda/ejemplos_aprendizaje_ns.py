@@ -9,10 +9,10 @@ el funcionamiento y poder probar con nuevas funcionalidades.
 
 __author__ = 'juliowaissman'
 
-
 import lamda
 import numpy as np
 import matplotlib.pyplot as pl
+
 
 def prueba_umbral():
     """
@@ -35,6 +35,7 @@ def prueba_umbral():
 
     return True
 
+
 # TODO: Banco de pruebas para el aprendizaje no supervisado, caso sencillo
 
 # TODO: Ejemplo a mano de como funciona el aprendizaje no supervisado en linea
@@ -44,4 +45,3 @@ if __name__ == '__main__':
 
     if prueba_umbral():
         print "Se encuentra el umbral de manera correcta"
-
