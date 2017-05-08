@@ -32,7 +32,6 @@ class Lamda(object):
 
    Para inicializar la clase Lambda, en principio muy sencillito
 
-<<<<<<< HEAD
     :operador: Función tal que recibe un ndarray de dimensión n, m
                      (con n objetos y m descriptores) y regrese un
                      ndarray vector columna tal que en la posición i,
@@ -47,22 +46,6 @@ class Lamda(object):
     :conceptos: Lista con el nombre de los conceptos (puden ser
                 numeros enteros tambien), si `None`, se asume que no
                 se conocen a priori.
-=======
-    :operador: Función tal que recibe un ndarray de dimensión n, m (con n
-                    objetos y m descriptores) y regrese un ndarray vector
-                    columna tal que en la posición i, aplique el operador de
-                    agregación seleccionad a los datos del i-ésimo renglon.
-                    Se puede generar con el decorador `@vectorize`.
-
-    :descriptores: Entero con el número de descriptores del problema. Si
-                        `None` entonces no se conocen a priori el número de
-                        descriptores
-
-    :conceptos: Lista con el nombre de los conceptos (puden ser numeros
-                     enteros tambien), si `None`, se asume que no se conocen
-                     a priori.
->>>>>>> 80c613faa13df662001efde92944a2b957bf0476
-
 
     Este ejemplo se puede probar:
 
@@ -84,7 +67,6 @@ class Lamda(object):
     def __init__(self, operador, descriptores=None, conceptos=None):
         """Inicializa la clase Lambda. En principio muy sencilloto
 
-<<<<<<< HEAD
         :param operador: función tal que recibe un ndarray de
                          dimensión n, m (con n objetos y m
                          descriptores) y regrese un ndarray vector
@@ -100,22 +82,6 @@ class Lamda(object):
         :param conceptos: Lista con el nombre de los conceptos (puden
                           ser numeros enteros tambien), Si None, se
                           asume que no se conocen a priori.
-=======
-        :param operador: función tal que recibe un ndarray de dimensión
-                            n, m (con n objetos y m descriptores) y regrese
-                            un ndarray vector columna tal que en la posición
-                            i, aplique el operador de agregación seleccionad
-                            a los datos del i´-ésimo renglon. Se puede generar
-                            con el decorador `@vectorize`
-
-        :param descriptores: Entero con el número de descriptores del
-                                problema. Si None entonces no se conocen a
-                                priori el número de descriptores
-
-        :param conceptos: Lista con el nombre de los conceptos
-                                (puden ser numeros enteros tambien).
-                                Si None, se asume que no se conocen a priori.
->>>>>>> 80c613faa13df662001efde92944a2b957bf0476
 
         """
         self.d = d = descriptores
@@ -128,7 +94,6 @@ class Lamda(object):
         """Calcula el grado de adecuación marginal
 
         :param x: Un ndarray de T \times n, donde T es el numero de
-<<<<<<< HEAD
                   ejemplos y n el de descriptores.  Las entradas
                   x_{ij} \in [0, 1] son pertenencias a etiquetas. Para
                   que se pueda realizar la operación, es necesario que
@@ -136,15 +101,6 @@ class Lamda(object):
 
         :return: [M1, M2, ..., MK] k matrices de tamaño de x con los
                  grados de adecuación marginales para cada clase.
-=======
-                       ejemplos y n el de descriptores. Las entradas x_{ij}
-                       \in [0, 1] son pertenencias a etiquetas. Para que se
-                       pueda realizar la operación, es necesario que
-                       `x.shape[1] == self.rho.shape[1]`
-
-        :return: [M1, M2, ..., MK] k matrices de tamaño de x con los
-                    grados de adecuación marginales para cada clase.
->>>>>>> 80c613faa13df662001efde92944a2b957bf0476
 
         """
         mads = []
@@ -157,7 +113,6 @@ class Lamda(object):
     def gad(self, mads):
         """Calcula el grado de adequación global para todas las clases
 
-<<<<<<< HEAD
         :param mads: lista de k matrics [M1, ..., Mk] de tamaño n
                      \times d con los grados de adequación marginal de
                      cada dato y cada descriptor en cada clase, tal
@@ -166,17 +121,6 @@ class Lamda(object):
         :return: ndarray de dimensión n, k con el grado de adecuación
                  marginalde cada clase en cada dato, utilizando el
                  operador de agregación.
-=======
-        :param mads: lista de k matrics [M1, ..., Mk] de tamaño
-                             n \times d con los grados de adequación
-                             marginal de cada dato y cada descriptor en
-                             cada clase, tal como se calculan con la
-                             función mads
-
-        :return: ndarray de dimensión n, k  con el grado de
-                    adecuación marginalde cada clase en cada
-                    dato, utilizando el operador de agregación.
->>>>>>> 80c613faa13df662001efde92944a2b957bf0476
 
         """
         gads = np.zeros((mads[0].shape[0], len(mads)))
@@ -185,41 +129,22 @@ class Lamda(object):
         return gads
 
     def aprendizaje_supervisado(self, x, y):
-<<<<<<< HEAD
         """Aprendizaje supervisado de la forma tradicional como se conoce en LAMDA
         utilizando simplemente las medias para establecer los valores de Rho.
 
         En este caso no guarda los valores anteriores, y simplemente
         vuelve a hacer a la matriz rho desde 0. Las clases (sus
         equivalencias en dado caso) las guarda.
-=======
-        """
-        Aprendizaje supervisado de la forma tradicional como
-        se conoce en LAMDA utilizando simplemente las medias
-        para establecer los valores de Rho.
-
-        En este caso no guarda los valores anteriores, y
-        simplemente vuelve a hacer a la matriz rho desde 0.
-        Las clases (sus equivalencias en dado caso) las guarda.
->>>>>>> 80c613faa13df662001efde92944a2b957bf0476
 
         :param x: Un ndarray de shape (n, d) donde n es el número
                        de objetos y d es el número de descriptores.
 
         :param y: Un ndarray de shape (d) con los d valores de salida
-<<<<<<< HEAD
                   de los datos.  si self.k ya existe, los elementos de
                   otras clases nuevas no se considerarán y las clases
                   sin datos se ponen todos los rhos a 0.5. Si self.k
                   es None, se genera a partir de los datos las
                   clases. En todo caso, se inicializan los rhos a 0
-=======
-                       de los datos. si self.k ya existe, los elementos de
-                       otras clases nuevas no se considerarán y las clases
-                       sin datos se ponen todos los rhos a 0.5. Si self.k es
-                       None, se genera a partir de los datos las
-                       clases. En todo caso, se inicializan los rhos a 0
->>>>>>> 80c613faa13df662001efde92944a2b957bf0476
 
         """
         if self.d is not None and self.d != x.shape[1]:
@@ -259,7 +184,8 @@ class Lamda(object):
         # TODO: Hacer la parte de finalización del algoritmo
 
     def reconoce(self, x, criterio='max', gads=False):
-        """Realiza el reconocimiento de un conjunto de variables por reconocer.
+        """
+        Realiza el reconocimiento de un conjunto de variables por reconocer.
 
         :param x: Un ndarray de shape (n, d) donde n es el número de objetos y
                   d es el número de descriptores.
@@ -267,20 +193,12 @@ class Lamda(object):
         :param criterio: Si 'max' entonces asigna a la clase con mayor GAD
 
         :param gads: Booleano, si True, devuelve una matriz de grados
-<<<<<<< HEAD
                      de adequación de dimensión (n, len(k))
 
         :return: Un ndarray de una dimensión con las clases asignadas
                  a cada objeto y si el parámetro gads es True, una
                  tupla con la asignación, y con las adecuaciones
                  globales.
-=======
-                           de adequación de dimensión (n, len(k))
-
-        :return: Un ndarray de una dimensión con las clases asignadas a
-                   cada objeto y si el parámetro gads es True, una tupla con
-                   la asignación, y con las adecuaciones globales.
->>>>>>> 80c613faa13df662001efde92944a2b957bf0476
 
         """
         if x.shape[1] != self.d:
@@ -323,19 +241,14 @@ def vectoriza(oa):
             return oa(*args)
         y = np.zeros(args[0].shape[0])
         for i in range(args[0].shape[0]):
-<<<<<<< HEAD
-            y[i] = oa(args[0][i, :]) if len(args) < 2 else oa(args[0][i, :], *args[1:])
-=======
             y[i] = oa(args[0][i, :]) if len(args) < 2 else oa(args[0][i, :],
                                                               *args[1:])
->>>>>>> 80c613faa13df662001efde92944a2b957bf0476
         return y
     return _oa
 
 
 @vectoriza
 def tnorma(x, fun):
-<<<<<<< HEAD
     """Una t-norma en forma genérica para funcionar en la clase Lamda
     como operador de agregación
 
@@ -347,24 +260,8 @@ def tnorma(x, fun):
               verifica.  :return: Un ndarray de dimensión (n) con la
               aplicación de la T-norma a cada caso, o un número en su
               caso
-=======
-    """
-    Una t-norma en forma genérica para funcionar en la clase Lamda
-    como operador de agregación
-
-    :param x: Un ndarray de shape (n, d) donde n es el número de objetos y
-                   d es el número de descriptores, o un ndarray de shape (n).
-
-    :param fun: Una función que recibe un ndarray de una dimensión y regresa
-                      un numero. Se asume que la función va a ser una T-norma,
-                      pero no se verifica.
-
-    :return: Un ndarray de dimensión (n) con la aplicación de la T-norma a
-                cada caso, o un número en su caso
->>>>>>> 80c613faa13df662001efde92944a2b957bf0476
 
     Ejemplo:
-
     >>> min_tnorma = lambda x: tnorma(x, np.min)
     >>> min_tnorma(np.array([[0, 0.9, 0.9], [0.5, 0.5, 0.5]]))
 
@@ -382,18 +279,10 @@ def op_compensacion(x, tnorma, tconorma, alpha):
     :param tconorma: Una función que recibe un vector y devuelve un número
     :param alpha: un valor entre 0 y 1
 
-<<<<<<< HEAD
     :return Un ndarray de dimensión (n) con la aplicación de la
     T-norma a cada caso, o un número en su caso
 
     Ejemplo:
-=======
-    :return Un ndarray de dimensión (n) con la aplicación de la T-norma a cada
-     caso, o un número en su caso
-
-    Ejemplo:
-
->>>>>>> 80c613faa13df662001efde92944a2b957bf0476
     >>> om_9 = lambda x: op_compensacion(x, np.min, np.max, 0.9)
     >>> a = np.array([[0, .9, .5],[1, .9, .5],[.1, .1, .1], [.5, .5, .5]])
     >>> om_9(a)
@@ -412,13 +301,8 @@ def triple_prod(x):
     :param x: Un ndarray de shape (n, d) donde n es el número de objetos y
               d es el número de descriptores, o un ndarray de shape (n).
 
-<<<<<<< HEAD
-    :return Un ndarray de dimensión (n) con la aplicación de la
-    T-norma a cada caso, o un número en su caso
-=======
     :return Un ndarray de dimensión (n) con la aplicación de la T-norma
     a cada caso, o un número en su caso
->>>>>>> 80c613faa13df662001efde92944a2b957bf0476
 
     Ejemplo:
 
@@ -449,14 +333,8 @@ if __name__ == "__main__":
     print "Triple producto"
     print triple_prod(a)
 
-<<<<<<< HEAD
-    def om_9(x):
-        return op_compensacion(x, np.min, np.max, 0.9)
-=======
     def om_9(x): = lambda x:
         return op_compensacion(x, np.min, np.max, 0.9)
-
->>>>>>> 80c613faa13df662001efde92944a2b957bf0476
     print "O. compensación min/max con exigencia 0.9"
     print om_9(a)
 
