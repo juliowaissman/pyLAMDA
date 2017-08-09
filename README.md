@@ -1,7 +1,7 @@
 pyLAMDA
 =======
 
-Una versión en Python de método LAMDA de aprendizaje difuso
+Una versión en Python de método LAMDA de aprendizaje difuso en construcción.
 
 LAMDA es un método para el aprendizaje supervisado y no supervisado 
 basado en lógica difusa, en un tiempo agregaremos un poco más
